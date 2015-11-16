@@ -12,3 +12,13 @@
 //__________________________________________________________________________________//
 
 #pragma once
+
+#include <ccVector/ccVector.h>
+
+typedef struct convexHull{
+	unsigned int nodeCount;
+	ccVec2 *nodes;
+} convexHull;
+
+// Create a convex hull from a RGBA raster source
+convexHull convexHullCreate(unsigned char *source, unsigned int width, unsigned int height, unsigned int precision);

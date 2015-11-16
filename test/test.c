@@ -95,7 +95,7 @@ int main(int argc, char **argv)
 	ccGLContextBind();
 
 	// Configure opengl
-	glClearColor(0.3f, 0.3f, 0.8f, 1.0f);
+	glClearColor(0, 0, 0, 1.0f);
 
 	// Initialize
 	loadImage();
