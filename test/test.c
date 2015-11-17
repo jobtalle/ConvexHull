@@ -72,6 +72,11 @@ void render()
 	glBegin(GL_LINES);
 	for(i = 0; i < hull.nodeCount; i++) {
 		ccVec2 position = (ccVec2){ hull.nodes[i].x * scalex, -hull.nodes[i].y * scaley };
+		ccVec2 nextPosition = (ccVec2){ hull.nodes[(i + 1) % nodeCount].x * scalex, -hull.nodes[(i + 1) % nodeCount].y * scaley };
+
+		glColor4f(1, 0, 0, 1);
+		glVertex2f(position.x, position.y);
+		glVertex2f(nextPosition.x, nextPosition.y);
 
 		glColor4f(1, 1, 1, 0.2f);
 		glVertex2f(0, 0);
