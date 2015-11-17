@@ -10,17 +10,19 @@
 
 #define TITLE "Convex Hull test case\n"
 #define IMAGEDIR "test/source.png"
+#define NODECOUNT_DEFAULT 16
 
 unsigned char *pixels;
+unsigned int nodeCount;
+unsigned int width, height;
+convexHull hull;
 GLuint texture;
 
 void loadImage()
 {
-	unsigned int width, height;
-
 	// Load image from file using lodepng
 	lodepng_decode32_file(&pixels, &width, &height, IMAGEDIR);
-	printf("\tLoaded test image %dx%d\n", width, height);
+	printf("Loaded test image %dx%d\n", width, height);
 
 	// Initialize openGL texture
 	glEnable(GL_TEXTURE_2D);
@@ -38,18 +40,49 @@ void loadImage()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+	nodeCount = NODECOUNT_DEFAULT;
+	hull = convexHullCreate(pixels, width, height, width >> 1, height >> 1, nodeCount);
 }
+
+#define CROSS_RADIUS 0.05f
 
 void render()
 {
+	unsigned int i;
+	float scalex = 1.0f / (width >> 1);
+	float scaley = 1.0f / (height >> 1);
+
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	glEnable(GL_TEXTURE_2D);
+
 	glBindTexture(GL_TEXTURE_2D, texture);
+
+	glColor3f(1, 1, 1);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0f, 0.0f);	glVertex2f(-1.0f, 1.0f);
 	glTexCoord2f(0.0f, 1.0f);	glVertex2f(-1.0f, -1.0f);
 	glTexCoord2f(1.0f, 1.0f);	glVertex2f(1.0f, -1.0f);
 	glTexCoord2f(1.0f, 0.0f);	glVertex2f(1.0f, 1.0f);
+	glEnd();
+	
+	glDisable(GL_TEXTURE_2D);
+
+	glBegin(GL_LINES);
+	for(i = 0; i < hull.nodeCount; i++) {
+		ccVec2 position = (ccVec2){ hull.nodes[i].x * scalex, -hull.nodes[i].y * scaley };
+
+		glColor4f(1, 1, 1, 0.2f);
+		glVertex2f(0, 0);
+		glVertex2fv((GLfloat*)&position);
+		
+		glColor4f(1, 1, 1, 1);
+		glVertex2f(position.x - CROSS_RADIUS, position.y);
+		glVertex2f(position.x + CROSS_RADIUS, position.y);
+		glVertex2f(position.x, position.y - CROSS_RADIUS);
+		glVertex2f(position.x, position.y + CROSS_RADIUS);
+	}
 	glEnd();
 }
 
@@ -64,6 +97,17 @@ int run()
 			switch(event.keyCode) {
 			case CC_KEY_ESCAPE:
 				return 0;
+				break;
+			case CC_KEY_UP:
+				nodeCount++;
+				hull = convexHullCreate(pixels, width, height, width >> 1, height >> 1, nodeCount);
+				printf("Changed node count to %d\n", nodeCount);
+				break;
+			case CC_KEY_DOWN:
+				nodeCount--;
+				if(nodeCount == 0) nodeCount = 1;
+				printf("Changed node count to %d\n", nodeCount);
+				hull = convexHullCreate(pixels, width, height, width >> 1, height >> 1, nodeCount);
 				break;
 			}
 			break;
