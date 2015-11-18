@@ -21,13 +21,13 @@ convexHull convexHullCreate(const unsigned char *source, const unsigned int widt
 
 	if(phase == 0) return convexHull;
 
-	// Graham scan
-	convexHullGrahamScan(&convexHull);
+	// Trim insignificant nodes
+	convexHullTrimInsignificantNodes(&convexHull, 64.0f);
 
 	if(phase == 1) return convexHull;
 
-	// Trim insignificant nodes
-	convexHullTrimInsignificantNodes(&convexHull, 64.0f);
+	// Graham scan
+	convexHullGrahamScan(&convexHull);
 
 	// Realloc trimmed graph
 	convexHull.nodes = realloc(convexHull.nodes, sizeof(ccVec2)* convexHull.nodeCount);
