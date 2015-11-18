@@ -4,6 +4,41 @@
 #include <convexHull/convexHull.h>
 #include <ccTrigonometry/ccTrigonometry.h>
 
+static ccVec2 comparePoint;
+
+static int convexHullOrientation(ccVec2 p, ccVec2 q, ccVec2 r)
+{
+	int c = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
+
+	if(c == 0) return 0;
+	return c > 0?1:2;
+}
+
+static void convexHullSwap(ccVec2 *a, ccVec2 *b)
+{
+	ccVec2 buffer = *a;
+	*a = *b;
+	*b = buffer;
+}
+
+static int convexHullDist(ccVec2 p1, ccVec2 p2)
+{
+	return (p1.x - p2.x)*(p1.x - p2.x) + (p1.y - p2.y)*(p1.y - p2.y);
+}
+
+static int convexHullCompare(const void *a, const void *b)
+{
+	ccVec2 *p1 = a;
+	ccVec2 *p2 = b;
+
+	int o = convexHullOrientation(comparePoint, *p1, *p2);
+	if(o == 0) {
+		return (convexHullDist(comparePoint, *p2) >= convexHullDist(comparePoint, *p1))?-1:1;
+	}
+
+	return (o == 2)?-1:1;
+}
+
 convexHull convexHullCreate(unsigned char *source, unsigned int width, unsigned int height, unsigned int offsetx, unsigned int offsety, unsigned int precision, int phase)
 {
 	unsigned int i;
@@ -54,6 +89,7 @@ convexHull convexHullCreate(unsigned char *source, unsigned int width, unsigned 
 
 			// Next
 			*node = ccVec2Add(*node, direction);
+			radius -= 1.0f;
 		}
 
 		r += rStep;
@@ -61,28 +97,44 @@ convexHull convexHullCreate(unsigned char *source, unsigned int width, unsigned 
 
 	if(phase == 0) return convexHull;
 
-	// Sweep concave nodes
-	unsigned int newNodeCount = 0;
-	ccVec2 *newNodes = malloc(sizeof(ccVec2)* precision);
+	// Graham scan
 
-	for(i = 0; i < precision; ++i) {
-		unsigned int previous = i == 0?precision - 1:i - 1;
-		unsigned int next = i == precision - 1?0:i + 1;
-		ccVec2 direction = ccVec2Subtract(*(convexHull.nodes + i), *(convexHull.nodes + previous));
-		ccVec2 orthogonal = (ccVec2){ -direction.y, direction.x };
-		ccVec2 newDirection = ccVec2Subtract(*(convexHull.nodes + next), *(convexHull.nodes + i));
-		float dot = ccVec2DotProduct(orthogonal, newDirection);
+	// Find minimum y
+	unsigned int minIndex = 0;
+	float ymin = convexHull.nodes[0].y;
 
-		if(dot > 0) {
-			*(newNodes + newNodeCount) = *(convexHull.nodes + i);
-			++newNodeCount;
+	for(i = 1; i < precision; ++i) {
+		if(convexHull.nodes[i].y < ymin) {
+			ymin = convexHull.nodes[i].y;
+			minIndex = i;
 		}
-
-		printf("Turn %d\n", dot > 0);
 	}
 
-	convexHull.nodes = newNodes;
-	convexHull.nodeCount = newNodeCount;
+	// Put minimum at zero
+	convexHullSwap(convexHull.nodes, convexHull.nodes + minIndex);
+
+	// Sort
+	comparePoint = convexHull.nodes[0];
+	qsort(convexHull.nodes, precision, sizeof(ccVec2), convexHullCompare);
+
+	// Create & initialize stack
+	unsigned int stackIndex = 3;
+	ccVec2 *stack = malloc(sizeof(ccVec2)* precision);
+
+	for(i = 0; i < 3; ++i) stack[i] = convexHull.nodes[i];
+
+	for(i = 3; i < precision; ++i) {
+		while(convexHullOrientation(stack[stackIndex - 2], stack[stackIndex - 1], convexHull.nodes[i]) != 2) {
+			--stackIndex;
+		}
+
+		stack[stackIndex] = convexHull.nodes[i];
+		++stackIndex;
+	}
+
+	// Store final list
+	convexHull.nodeCount = stackIndex;
+	convexHull.nodes = stack;
 
 	return convexHull;
 }
