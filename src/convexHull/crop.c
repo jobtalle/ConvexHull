@@ -1,6 +1,5 @@
 #include <convexHull/convexHull.h>
-
-#include <ccTrigonometry/ccTrigonometry.h>
+#include <math.h>
 
 #define CONVEX_HULL_ALPHA_MASK 0xFF000000
 
@@ -8,7 +7,7 @@ void convexHullCrop(convexHull *convexHull, const unsigned char *source, const u
 {
 	unsigned int i;
 	float r;
-	float rStep = CC_TRI_PI_DOUBLE_F / convexHull->nodeCount;
+	float rStep = 6.283185f / convexHull->nodeCount;
 	const convexHullVector halfDim = (convexHullVector){ (float)(width >> 1), (float)(height >> 1) };
 
 	r = 0;
