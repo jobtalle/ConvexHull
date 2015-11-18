@@ -36,5 +36,5 @@ void convexHullTrimInsignificantNodes(convexHull *convexHull, float trimDistance
 		}
 	}
 
-	convexHull->nodeCount = ++j;
+	convexHull->nodeCount = j;
 }
