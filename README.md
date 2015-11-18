@@ -5,7 +5,7 @@ This project requires [ccTrigonometry](https://github.com/jobtalle/ccTrigonometr
 
 ![Convex hull algorithm stages](example.gif)
 
-The animated example above shows the three stages of the algorithm;
+The animated example above shows the three stages of the algorithm with fairly low precision;
 - Cropping an inital number of nodes around the image based on precision.
 - Mean nodes that are close to each other.
 - Perform a Graham scan to obtain a concave shape.
