@@ -7,7 +7,7 @@ static unsigned int convexHullRayCount(const unsigned int width, const unsigned 
 	return (width + height) / (spacing >> 1);
 }
 
-convexHull convexHullCreate(const unsigned char *source, const unsigned int width, const unsigned int height, const convexHullVector pivot, const unsigned int spacing, float precision)
+convexHull convexHullCreate(const unsigned char *source, const unsigned int width, const unsigned int height, const convexHullVector pivot, const unsigned int spacing, const float precision)
 {
 	convexHull convexHull;
 

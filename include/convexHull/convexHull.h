@@ -29,4 +29,4 @@ convexHull convexHullCreate(
 	const unsigned int height,
 	const convexHullVector pivot,
 	const unsigned int spacing,
-	float precision);
+	const float precision);

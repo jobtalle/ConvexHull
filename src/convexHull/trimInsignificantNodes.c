@@ -10,7 +10,7 @@ static float convexHullDist(convexHullVector p1, convexHullVector p2)
 	return sqrtf(dx * dx + dy * dy);
 }
 
-void convexHullTrimInsignificantNodes(convexHull *convexHull, float trimDistance)
+void convexHullTrimInsignificantNodes(convexHull *convexHull, const float trimDistance)
 {
 	unsigned int i, j, k;
 	convexHullVector root = convexHull->nodes[0];

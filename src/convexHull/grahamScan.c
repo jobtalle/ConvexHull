@@ -4,7 +4,7 @@
 
 static convexHullVector comparePoint;
 
-static float convexHullOrientation(convexHullVector p, convexHullVector q, convexHullVector r)
+static float convexHullOrientation(const convexHullVector p, const convexHullVector q, const convexHullVector r)
 {
 	return (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
 }

@@ -14,4 +14,4 @@ void convexHullGrahamScan(
 
 void convexHullTrimInsignificantNodes(
 	convexHull *convexHull,
-	float trimDistance);
+	const float trimDistance);
