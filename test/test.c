@@ -113,14 +113,14 @@ int run()
 				hull = convexHullCreate(pixels, width, height, (ccVec2){ (ccvType)(width >> 1), (ccvType)(height >> 1) }, nodeCount, 2);
 				break;
 			case CC_KEY_UP:
-				nodeCount++;
+				nodeCount+=8;
 				hull = convexHullCreate(pixels, width, height, (ccVec2){ (ccvType)(width >> 1), (ccvType)(height >> 1) }, nodeCount, 0);
-				printf("Changed node count to %d\n", nodeCount);
+				printf("Changed spacing to %d\n", nodeCount);
 				break;
 			case CC_KEY_DOWN:
-				nodeCount--;
-				if(nodeCount == 0) nodeCount = 1;
-				printf("Changed node count to %d\n", nodeCount);
+				nodeCount-=8;
+				if(nodeCount == 0) nodeCount = 8;
+				printf("Changed spacing to %d\n", nodeCount);
 				hull = convexHullCreate(pixels, width, height, (ccVec2){ (ccvType)(width >> 1), (ccvType)(height >> 1) }, nodeCount, 0);
 				break;
 			}
