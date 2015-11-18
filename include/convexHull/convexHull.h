@@ -27,4 +27,4 @@ convexHull convexHullCreate(
 	const unsigned int height,
 	const ccVec2 pivot,
 	const unsigned int spacing,
-	int phase);
+	float precision);
