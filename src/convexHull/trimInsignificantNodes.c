@@ -22,12 +22,14 @@ void convexHullTrimInsignificantNodes(convexHull *convexHull, float trimDistance
 
 		if(convexHullDist(convexHull->nodes[j], current) > trimDistance) {
 			// Add node to final graph
-			convexHull->nodes[j] = ccVec2Multiply(root, 1.0f / k);
+			convexHull->nodes[j++] = ccVec2Multiply(root, 1.0f / k);
 
 			// Reset root
-			convexHull->nodes[++j] = current;
-			k = 1;
-			root = current;
+			if(i != convexHull->nodeCount) {
+				convexHull->nodes[j] = current;
+				k = 1;
+				root = current;
+			}
 		}
 		else {
 			// Add node to root
