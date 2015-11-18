@@ -11,10 +11,11 @@
 #define TITLE "Convex Hull test case\n"
 #define IMAGEDIR "test/source.png"
 #define NODECOUNT_DEFAULT 16
-#define PRECISION 64.0f
+#define PRECISION_DEFAULT 16.0f
 
 unsigned char *pixels;
 unsigned int nodeCount;
+float precision;
 unsigned int width, height;
 convexHull hull;
 GLuint texture;
@@ -43,7 +44,8 @@ void loadImage()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
 	nodeCount = NODECOUNT_DEFAULT;
-	hull = convexHullCreate(pixels, width, height, (ccVec2){ (ccvType)(width >> 1), (ccvType)(height >> 1) }, nodeCount, PRECISION);
+	precision = PRECISION_DEFAULT;
+	hull = convexHullCreate(pixels, width, height, (ccVec2){ (ccvType)(width >> 1), (ccvType)(height >> 1) }, nodeCount, precision);
 }
 
 #define CROSS_RADIUS 0.05f
@@ -104,25 +106,27 @@ int run()
 			case CC_KEY_ESCAPE:
 				return 0;
 				break;
-			case CC_KEY_1:
-				hull = convexHullCreate(pixels, width, height, (ccVec2){ (ccvType)(width >> 1), (ccvType)(height >> 1) }, nodeCount, PRECISION);
+			case CC_KEY_LEFT:
+				precision -= 8.0f;
+				if(precision < 8.0f) precision = 8.0f;
+				hull = convexHullCreate(pixels, width, height, (ccVec2){ (ccvType)(width >> 1), (ccvType)(height >> 1) }, nodeCount, precision);
+				printf("Changed precision to %.2f\n", precision);
 				break;
-			case CC_KEY_2:
-				hull = convexHullCreate(pixels, width, height, (ccVec2){ (ccvType)(width >> 1), (ccvType)(height >> 1) }, nodeCount, PRECISION);
-				break;
-			case CC_KEY_3:
-				hull = convexHullCreate(pixels, width, height, (ccVec2){ (ccvType)(width >> 1), (ccvType)(height >> 1) }, nodeCount, PRECISION);
+			case CC_KEY_RIGHT:
+				precision += 8.0f;
+				hull = convexHullCreate(pixels, width, height, (ccVec2){ (ccvType)(width >> 1), (ccvType)(height >> 1) }, nodeCount, precision);
+				printf("Changed precision to %.2f\n", precision);
 				break;
 			case CC_KEY_UP:
 				nodeCount+=8;
-				hull = convexHullCreate(pixels, width, height, (ccVec2){ (ccvType)(width >> 1), (ccvType)(height >> 1) }, nodeCount, PRECISION);
+				hull = convexHullCreate(pixels, width, height, (ccVec2){ (ccvType)(width >> 1), (ccvType)(height >> 1) }, nodeCount, precision);
 				printf("Changed spacing to %d\n", nodeCount);
 				break;
 			case CC_KEY_DOWN:
 				nodeCount-=8;
 				if(nodeCount == 0) nodeCount = 8;
 				printf("Changed spacing to %d\n", nodeCount);
-				hull = convexHullCreate(pixels, width, height, (ccVec2){ (ccvType)(width >> 1), (ccvType)(height >> 1) }, nodeCount, PRECISION);
+				hull = convexHullCreate(pixels, width, height, (ccVec2){ (ccvType)(width >> 1), (ccvType)(height >> 1) }, nodeCount, precision);
 				break;
 			}
 			break;
