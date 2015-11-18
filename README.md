@@ -1,7 +1,7 @@
 # ConvexHull
 Automatic convex hull generation for raster images
 
-The test case requires [ccore](https://github.com/ccore/ccore) to build.
+The test case requires [ccore](https://github.com/ccore/ccore) to build, and uses [lodepng](https://github.com/lvandeve/lodepng) to decode a PNG image.
 
 ![Convex hull algorithm stages](example.gif)
 
