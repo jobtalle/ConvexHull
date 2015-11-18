@@ -1,5 +1,7 @@
 #pragma once
 
+#include <convexHull/convexHull.h>
+
 void convexHullCrop(
 	convexHull *convexHull,
 	const unsigned char *source,
@@ -9,3 +11,7 @@ void convexHullCrop(
 
 void convexHullGrahamScan(
 	convexHull *convexHull);
+
+void convexHullTrimInsignificantNodes(
+	convexHull *convexHull,
+	float trimDistance);

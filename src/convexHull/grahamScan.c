@@ -60,8 +60,7 @@ void convexHullGrahamScan(convexHull *convexHull)
 			--stackIndex;
 		}
 
-		convexHull->nodes[stackIndex] = convexHull->nodes[i];
-		++stackIndex;
+		convexHull->nodes[stackIndex++] = convexHull->nodes[i];
 	}
 
 	// Store final list
