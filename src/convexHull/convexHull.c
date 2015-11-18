@@ -6,12 +6,9 @@
 
 static ccVec2 comparePoint;
 
-static int convexHullOrientation(ccVec2 p, ccVec2 q, ccVec2 r)
+static float convexHullOrientation(ccVec2 p, ccVec2 q, ccVec2 r)
 {
-	int c = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
-
-	if(c == 0) return 0;
-	return c > 0?1:2;
+	return (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
 }
 
 static void convexHullSwap(ccVec2 *a, ccVec2 *b)
@@ -21,31 +18,64 @@ static void convexHullSwap(ccVec2 *a, ccVec2 *b)
 	*b = buffer;
 }
 
-static int convexHullDist(ccVec2 p1, ccVec2 p2)
+static float convexHullDist(ccVec2 p1, ccVec2 p2)
 {
-	return (p1.x - p2.x)*(p1.x - p2.x) + (p1.y - p2.y)*(p1.y - p2.y);
+	return (p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y);
 }
 
 static int convexHullCompare(const void *a, const void *b)
 {
-	ccVec2 *p1 = a;
-	ccVec2 *p2 = b;
+	const ccVec2 *p1 = a;
+	const ccVec2 *p2 = b;
 
-	int o = convexHullOrientation(comparePoint, *p1, *p2);
-	if(o == 0) {
-		return (convexHullDist(comparePoint, *p2) >= convexHullDist(comparePoint, *p1))?-1:1;
-	}
+	float orientation = convexHullOrientation(comparePoint, *p1, *p2);
 
-	return (o == 2)?-1:1;
+	if(orientation == 0) return (convexHullDist(comparePoint, *p2) >= convexHullDist(comparePoint, *p1))?-1:1;
+	return (orientation < 0)?-1:1;
 }
 
-convexHull convexHullCreate(unsigned char *source, unsigned int width, unsigned int height, unsigned int offsetx, unsigned int offsety, unsigned int precision, int phase)
+static void convexHullGrahamScan(convexHull *convexHull)
 {
 	unsigned int i;
-	unsigned int *colors = (unsigned int*)source;
+	unsigned int minIndex = 0;
+	unsigned int stackIndex = 3;
+	float ymin = convexHull->nodes[0].y;
+
+	// Find minimum Y
+	for(i = 1; i < convexHull->nodeCount; ++i) {
+		if(convexHull->nodes[i].y < ymin) {
+			ymin = convexHull->nodes[i].y;
+			minIndex = i;
+		}
+	}
+
+	// Put minimum at zero
+	convexHullSwap(convexHull->nodes, convexHull->nodes + minIndex);
+
+	// Sort
+	comparePoint = convexHull->nodes[0];
+	qsort(convexHull->nodes, convexHull->nodeCount, sizeof(ccVec2), convexHullCompare);
+
+	// Create & initialize stack
+	for(i = 3; i < convexHull->nodeCount; ++i) {
+		while(convexHullOrientation(convexHull->nodes[stackIndex - 2], convexHull->nodes[stackIndex - 1], convexHull->nodes[i]) >= 0) {
+			--stackIndex;
+		}
+
+		convexHull->nodes[stackIndex] = convexHull->nodes[i];
+		++stackIndex;
+	}
+
+	// Store final list
+	convexHull->nodeCount = stackIndex;
+}
+
+convexHull convexHullCreate(const unsigned char *source, const unsigned int width, const unsigned int height, const ccVec2 pivot, const unsigned int precision, int phase)
+{
+	unsigned int i;
 	float r;
 	float rStep = CC_TRI_PI_DOUBLE_F / precision;
-	ccVec2 halfDim = (ccVec2){ (float)(width >> 1), (float)(height >> 1) };
+	const ccVec2 halfDim = (ccVec2){ (float)(width >> 1), (float)(height >> 1) };
 	convexHull convexHull;
 
 	// Create nodes
@@ -76,21 +106,30 @@ convexHull convexHullCreate(unsigned char *source, unsigned int width, unsigned 
 		--radius;
 		node->x *= radius;
 		node->y *= radius;
+
+		// Normalize
+		*node = ccVec2Add(*node, halfDim);
 		
 		// Crop until opaque pixel is found
 		for(;;) {
-			int x = (int)(node->x + halfDim.x);
-			int y = (int)(node->y + halfDim.y);
+			const unsigned int x = (unsigned int)node->x;
+			const unsigned int y = (unsigned int)node->y;
 
 			// Check alpha
-			if(colors[x + y * width] & 0xFF000000) {
+			if(((unsigned int*)source)[x + y * width] & 0xFF000000) {
 				break;
 			}
 
 			// Next
 			*node = ccVec2Add(*node, direction);
 			radius -= 1.0f;
+
+			// Prevent overflows
+			if(radius < 0) break;
 		}
+
+		// Move to pivot
+		*node = ccVec2Subtract(*node, pivot);
 
 		r += rStep;
 	}
@@ -98,43 +137,7 @@ convexHull convexHullCreate(unsigned char *source, unsigned int width, unsigned 
 	if(phase == 0) return convexHull;
 
 	// Graham scan
-
-	// Find minimum y
-	unsigned int minIndex = 0;
-	float ymin = convexHull.nodes[0].y;
-
-	for(i = 1; i < precision; ++i) {
-		if(convexHull.nodes[i].y < ymin) {
-			ymin = convexHull.nodes[i].y;
-			minIndex = i;
-		}
-	}
-
-	// Put minimum at zero
-	convexHullSwap(convexHull.nodes, convexHull.nodes + minIndex);
-
-	// Sort
-	comparePoint = convexHull.nodes[0];
-	qsort(convexHull.nodes, precision, sizeof(ccVec2), convexHullCompare);
-
-	// Create & initialize stack
-	unsigned int stackIndex = 3;
-	ccVec2 *stack = malloc(sizeof(ccVec2)* precision);
-
-	for(i = 0; i < 3; ++i) stack[i] = convexHull.nodes[i];
-
-	for(i = 3; i < precision; ++i) {
-		while(convexHullOrientation(stack[stackIndex - 2], stack[stackIndex - 1], convexHull.nodes[i]) != 2) {
-			--stackIndex;
-		}
-
-		stack[stackIndex] = convexHull.nodes[i];
-		++stackIndex;
-	}
-
-	// Store final list
-	convexHull.nodeCount = stackIndex;
-	convexHull.nodes = stack;
+	convexHullGrahamScan(&convexHull);
 
 	return convexHull;
 }

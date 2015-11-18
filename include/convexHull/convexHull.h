@@ -21,4 +21,4 @@ typedef struct convexHull{
 } convexHull;
 
 // Create a convex hull from a RGBA raster source
-convexHull convexHullCreate(unsigned char *source, unsigned int width, unsigned int height, unsigned int offsetx, unsigned int offsety, unsigned int precision, int phase);
+convexHull convexHullCreate(const unsigned char *source, const unsigned int width, const unsigned int height, const ccVec2 pivot, const unsigned int precision, int phase);

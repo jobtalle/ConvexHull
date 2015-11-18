@@ -42,7 +42,7 @@ void loadImage()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
 	nodeCount = NODECOUNT_DEFAULT;
-	hull = convexHullCreate(pixels, width, height, width >> 1, height >> 1, nodeCount, 0);
+	hull = convexHullCreate(pixels, width, height, (ccVec2){ (ccvType)(width >> 1), (ccvType)(height >> 1) }, nodeCount, 0);
 }
 
 #define CROSS_RADIUS 0.05f
@@ -104,24 +104,24 @@ int run()
 				return 0;
 				break;
 			case CC_KEY_1:
-				hull = convexHullCreate(pixels, width, height, width >> 1, height >> 1, nodeCount, 0);
+				hull = convexHullCreate(pixels, width, height, (ccVec2){ (ccvType)(width >> 1), (ccvType)(height >> 1) }, nodeCount, 0);
 				break;
 			case CC_KEY_2:
-				hull = convexHullCreate(pixels, width, height, width >> 1, height >> 1, nodeCount, 1);
+				hull = convexHullCreate(pixels, width, height, (ccVec2){ (ccvType)(width >> 1), (ccvType)(height >> 1) }, nodeCount, 1);
 				break;
 			case CC_KEY_3:
-				hull = convexHullCreate(pixels, width, height, width >> 1, height >> 1, nodeCount, 2);
+				hull = convexHullCreate(pixels, width, height, (ccVec2){ (ccvType)(width >> 1), (ccvType)(height >> 1) }, nodeCount, 2);
 				break;
 			case CC_KEY_UP:
 				nodeCount++;
-				hull = convexHullCreate(pixels, width, height, width >> 1, height >> 1, nodeCount, 0);
+				hull = convexHullCreate(pixels, width, height, (ccVec2){ (ccvType)(width >> 1), (ccvType)(height >> 1) }, nodeCount, 0);
 				printf("Changed node count to %d\n", nodeCount);
 				break;
 			case CC_KEY_DOWN:
 				nodeCount--;
 				if(nodeCount == 0) nodeCount = 1;
 				printf("Changed node count to %d\n", nodeCount);
-				hull = convexHullCreate(pixels, width, height, width >> 1, height >> 1, nodeCount, 0);
+				hull = convexHullCreate(pixels, width, height, (ccVec2){ (ccvType)(width >> 1), (ccvType)(height >> 1) }, nodeCount, 0);
 				break;
 			}
 			break;
