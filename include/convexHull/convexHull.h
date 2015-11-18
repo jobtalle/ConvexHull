@@ -30,3 +30,6 @@ convexHull convexHullCreate(
 	const convexHullVector pivot,
 	const unsigned int spacing,
 	const float precision);
+
+// Free convex hull contents
+void convexHullFree(convexHull convexHull);

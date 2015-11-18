@@ -165,5 +165,8 @@ int main(int argc, char **argv)
 
 	while(run());
 
+	// Free
+	convexHullFree(hull);
+
 	return 0;
 }

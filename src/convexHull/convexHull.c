@@ -28,3 +28,8 @@ convexHull convexHullCreate(const unsigned char *source, const unsigned int widt
 
 	return convexHull;
 }
+
+void convexHullFree(convexHull convexHull)
+{
+	free(convexHull.nodes);
+}
