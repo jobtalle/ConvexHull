@@ -42,7 +42,7 @@ void loadImage()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
 	nodeCount = NODECOUNT_DEFAULT;
-	hull = convexHullCreate(pixels, width, height, width >> 1, height >> 1, nodeCount);
+	hull = convexHullCreate(pixels, width, height, width >> 1, height >> 1, nodeCount, 0);
 }
 
 #define CROSS_RADIUS 0.05f
@@ -72,7 +72,7 @@ void render()
 	glBegin(GL_LINES);
 	for(i = 0; i < hull.nodeCount; i++) {
 		ccVec2 position = (ccVec2){ hull.nodes[i].x * scalex, -hull.nodes[i].y * scaley };
-		ccVec2 nextPosition = (ccVec2){ hull.nodes[(i + 1) % nodeCount].x * scalex, -hull.nodes[(i + 1) % nodeCount].y * scaley };
+		ccVec2 nextPosition = (ccVec2){ hull.nodes[(i + 1) % hull.nodeCount].x * scalex, -hull.nodes[(i + 1) % hull.nodeCount].y * scaley };
 
 		glColor4f(1, 0, 0, 1);
 		glVertex2f(position.x, position.y);
@@ -103,16 +103,25 @@ int run()
 			case CC_KEY_ESCAPE:
 				return 0;
 				break;
+			case CC_KEY_1:
+				hull = convexHullCreate(pixels, width, height, width >> 1, height >> 1, nodeCount, 0);
+				break;
+			case CC_KEY_2:
+				hull = convexHullCreate(pixels, width, height, width >> 1, height >> 1, nodeCount, 1);
+				break;
+			case CC_KEY_3:
+				hull = convexHullCreate(pixels, width, height, width >> 1, height >> 1, nodeCount, 2);
+				break;
 			case CC_KEY_UP:
 				nodeCount++;
-				hull = convexHullCreate(pixels, width, height, width >> 1, height >> 1, nodeCount);
+				hull = convexHullCreate(pixels, width, height, width >> 1, height >> 1, nodeCount, 0);
 				printf("Changed node count to %d\n", nodeCount);
 				break;
 			case CC_KEY_DOWN:
 				nodeCount--;
 				if(nodeCount == 0) nodeCount = 1;
 				printf("Changed node count to %d\n", nodeCount);
-				hull = convexHullCreate(pixels, width, height, width >> 1, height >> 1, nodeCount);
+				hull = convexHullCreate(pixels, width, height, width >> 1, height >> 1, nodeCount, 0);
 				break;
 			}
 			break;

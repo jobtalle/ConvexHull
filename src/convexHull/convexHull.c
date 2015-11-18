@@ -4,14 +4,7 @@
 #include <convexHull/convexHull.h>
 #include <ccTrigonometry/ccTrigonometry.h>
 
-static void convexHullIntSwap(int *a, int *b)
-{
-	*a ^= *b;
-	*b ^= *a;
-	*a ^= *b;
-}
-
-convexHull convexHullCreate(unsigned char *source, unsigned int width, unsigned int height, unsigned int offsetx, unsigned int offsety, unsigned int precision)
+convexHull convexHullCreate(unsigned char *source, unsigned int width, unsigned int height, unsigned int offsetx, unsigned int offsety, unsigned int precision, int phase)
 {
 	unsigned int i;
 	unsigned int *colors = (unsigned int*)source;
@@ -66,10 +59,30 @@ convexHull convexHullCreate(unsigned char *source, unsigned int width, unsigned 
 		r += rStep;
 	}
 
-	// Sweep concave nodes
-	for(i = 0; i < precision; ++i) {
+	if(phase == 0) return convexHull;
 
+	// Sweep concave nodes
+	unsigned int newNodeCount = 0;
+	ccVec2 *newNodes = malloc(sizeof(ccVec2)* precision);
+
+	for(i = 0; i < precision; ++i) {
+		unsigned int previous = i == 0?precision - 1:i - 1;
+		unsigned int next = i == precision - 1?0:i + 1;
+		ccVec2 direction = ccVec2Subtract(*(convexHull.nodes + i), *(convexHull.nodes + previous));
+		ccVec2 orthogonal = (ccVec2){ -direction.y, direction.x };
+		ccVec2 newDirection = ccVec2Subtract(*(convexHull.nodes + next), *(convexHull.nodes + i));
+		float dot = ccVec2DotProduct(orthogonal, newDirection);
+
+		if(dot > 0) {
+			*(newNodes + newNodeCount) = *(convexHull.nodes + i);
+			++newNodeCount;
+		}
+
+		printf("Turn %d\n", dot > 0);
 	}
+
+	convexHull.nodes = newNodes;
+	convexHull.nodeCount = newNodeCount;
 
 	return convexHull;
 }
