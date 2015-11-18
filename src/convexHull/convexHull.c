@@ -7,12 +7,12 @@ static unsigned int convexHullRayCount(const unsigned int width, const unsigned 
 	return (width + height) / (spacing >> 1);
 }
 
-convexHull convexHullCreate(const unsigned char *source, const unsigned int width, const unsigned int height, const ccVec2 pivot, const unsigned int spacing, float precision)
+convexHull convexHullCreate(const unsigned char *source, const unsigned int width, const unsigned int height, const convexHullVector pivot, const unsigned int spacing, float precision)
 {
 	convexHull convexHull;
 
 	convexHull.nodeCount = convexHullRayCount(width, height, spacing);
-	convexHull.nodes = malloc(sizeof(ccVec2)* convexHull.nodeCount);
+	convexHull.nodes = malloc(sizeof(convexHullVector)* convexHull.nodeCount);
 
 	// Crop image
 	convexHullCrop(&convexHull, source, width, height, pivot);
@@ -24,7 +24,7 @@ convexHull convexHullCreate(const unsigned char *source, const unsigned int widt
 	convexHullGrahamScan(&convexHull);
 
 	// Realloc trimmed graph
-	convexHull.nodes = realloc(convexHull.nodes, sizeof(ccVec2)* convexHull.nodeCount);
+	convexHull.nodes = realloc(convexHull.nodes, sizeof(convexHullVector)* convexHull.nodeCount);
 
 	return convexHull;
 }

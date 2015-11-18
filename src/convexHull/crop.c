@@ -4,17 +4,17 @@
 
 #define CONVEX_HULL_ALPHA_MASK 0xFF000000
 
-void convexHullCrop(convexHull *convexHull, const unsigned char *source, const unsigned int width, const unsigned int height, const ccVec2 pivot)
+void convexHullCrop(convexHull *convexHull, const unsigned char *source, const unsigned int width, const unsigned int height, const convexHullVector pivot)
 {
 	unsigned int i;
 	float r;
 	float rStep = CC_TRI_PI_DOUBLE_F / convexHull->nodeCount;
-	const ccVec2 halfDim = (ccVec2){ (float)(width >> 1), (float)(height >> 1) };
+	const convexHullVector halfDim = (convexHullVector){ (float)(width >> 1), (float)(height >> 1) };
 
 	r = 0;
 	for(i = 0; i < convexHull->nodeCount;  ++i) {
-		ccVec2 *node = convexHull->nodes + i;
-		ccVec2 direction = (ccVec2){ -cosf(r), -sinf(r) };
+		convexHullVector *node = convexHull->nodes + i;
+		convexHullVector direction = (convexHullVector){ -cosf(r), -sinf(r) };
 		float abscos;
 		float abssin;
 		float radius;
@@ -37,7 +37,8 @@ void convexHullCrop(convexHull *convexHull, const unsigned char *source, const u
 		node->y *= radius;
 
 		// Normalize
-		*node = ccVec2Add(*node, halfDim);
+		node->x += halfDim.x;
+		node->y += halfDim.y;
 
 		// Crop until opaque pixel is found
 		for(;;) {
@@ -50,7 +51,8 @@ void convexHullCrop(convexHull *convexHull, const unsigned char *source, const u
 			}
 
 			// Next
-			*node = ccVec2Add(*node, direction);
+			node->x += direction.x;
+			node->y += direction.y;
 			radius -= 1.0f;
 
 			// Prevent overflows
@@ -58,7 +60,8 @@ void convexHullCrop(convexHull *convexHull, const unsigned char *source, const u
 		}
 
 		// Move to pivot
-		*node = ccVec2Subtract(*node, pivot);
+		node->x -= pivot.x;
+		node->y -= pivot.y;
 
 		r += rStep;
 	}

@@ -2,29 +2,29 @@
 
 #include <stdlib.h>
 
-static ccVec2 comparePoint;
+static convexHullVector comparePoint;
 
-static float convexHullOrientation(ccVec2 p, ccVec2 q, ccVec2 r)
+static float convexHullOrientation(convexHullVector p, convexHullVector q, convexHullVector r)
 {
 	return (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
 }
 
-static void convexHullSwap(ccVec2 *a, ccVec2 *b)
+static void convexHullSwap(convexHullVector *a, convexHullVector *b)
 {
-	ccVec2 buffer = *a;
+	convexHullVector buffer = *a;
 	*a = *b;
 	*b = buffer;
 }
 
-static float convexHullDist(ccVec2 p1, ccVec2 p2)
+static float convexHullDist(convexHullVector p1, convexHullVector p2)
 {
 	return (p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y);
 }
 
 static int convexHullCompare(const void *a, const void *b)
 {
-	const ccVec2 *p1 = a;
-	const ccVec2 *p2 = b;
+	const convexHullVector *p1 = a;
+	const convexHullVector *p2 = b;
 
 	float orientation = convexHullOrientation(comparePoint, *p1, *p2);
 
@@ -52,7 +52,7 @@ void convexHullGrahamScan(convexHull *convexHull)
 
 	// Sort
 	comparePoint = convexHull->nodes[0];
-	qsort(convexHull->nodes, convexHull->nodeCount, sizeof(ccVec2), convexHullCompare);
+	qsort(convexHull->nodes, convexHull->nodeCount, sizeof(convexHullVector), convexHullCompare);
 
 	// Create & initialize stack
 	for(i = 3; i < convexHull->nodeCount; ++i) {

@@ -13,11 +13,13 @@
 
 #pragma once
 
-#include <ccVector/ccVector.h>
+typedef struct {
+	float x, y;
+} convexHullVector;
 
 typedef struct convexHull{
 	unsigned int nodeCount;
-	ccVec2 *nodes;
+	convexHullVector *nodes;
 } convexHull;
 
 // Create a convex hull from a RGBA raster source
@@ -25,6 +27,6 @@ convexHull convexHullCreate(
 	const unsigned char *source,
 	const unsigned int width,
 	const unsigned int height,
-	const ccVec2 pivot,
+	const convexHullVector pivot,
 	const unsigned int spacing,
 	float precision);

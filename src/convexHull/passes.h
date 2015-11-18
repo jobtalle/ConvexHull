@@ -7,7 +7,7 @@ void convexHullCrop(
 	const unsigned char *source,
 	const unsigned int width,
 	const unsigned int height,
-	const ccVec2 pivot);
+	const convexHullVector pivot);
 
 void convexHullGrahamScan(
 	convexHull *convexHull);
