@@ -3,9 +3,9 @@
 
 #define CONVEX_HULL_ALPHA_MASK 0xFF000000
 
-void convexHullCrop(convexHull *convexHull, const unsigned char *source, const unsigned int width, const unsigned int height, const convexHullVector pivot)
+void convexHullCrop(convexHull *convexHull, const uint8_t *source, const uint32_t width, const uint32_t height, const convexHullVector pivot)
 {
-	unsigned int i;
+	uint32_t i;
 	float r;
 	float rStep = 6.283185f / convexHull->nodeCount;
 	const convexHullVector halfDim = (convexHullVector){ (float)(width >> 1), (float)(height >> 1) };
@@ -41,11 +41,11 @@ void convexHullCrop(convexHull *convexHull, const unsigned char *source, const u
 
 		// Crop until opaque pixel is found
 		for(;;) {
-			const unsigned int x = (unsigned int)node->x;
-			const unsigned int y = (unsigned int)node->y;
+			const uint32_t x = (uint32_t)node->x;
+			const uint32_t y = (uint32_t)node->y;
 
 			// Check alpha
-			if(((unsigned int*)source)[x + y * width] & CONVEX_HULL_ALPHA_MASK) {
+			if(((uint32_t*)source)[x + y * width] & CONVEX_HULL_ALPHA_MASK) {
 				break;
 			}
 

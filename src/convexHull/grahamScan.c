@@ -34,9 +34,9 @@ static int convexHullCompare(const void *a, const void *b)
 
 void convexHullGrahamScan(convexHull *convexHull)
 {
-	unsigned int i;
-	unsigned int minIndex = 0;
-	unsigned int stackIndex = 3;
+	uint32_t i;
+	uint32_t minIndex = 0;
+	uint32_t stackIndex = 3;
 	float ymin = convexHull->nodes[0].y;
 
 	// Find minimum Y

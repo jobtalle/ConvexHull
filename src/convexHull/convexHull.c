@@ -2,12 +2,12 @@
 
 #include "passes.h"
 
-static unsigned int convexHullRayCount(const unsigned int width, const unsigned int height, const unsigned int spacing)
+static uint32_t convexHullRayCount(const uint32_t width, const uint32_t height, const uint32_t spacing)
 {
 	return (width + height) / (spacing >> 1);
 }
 
-convexHull convexHullCreate(const unsigned char *source, const unsigned int width, const unsigned int height, const convexHullVector pivot, const unsigned int spacing, const float precision)
+convexHull convexHullCreate(const uint8_t *source, const uint32_t width, const uint32_t height, const convexHullVector pivot, const uint32_t spacing, const float precision)
 {
 	convexHull convexHull;
 

@@ -12,7 +12,7 @@ static float convexHullDist(convexHullVector p1, convexHullVector p2)
 
 void convexHullTrimInsignificantNodes(convexHull *convexHull, const float trimDistance)
 {
-	unsigned int i, j, k;
+	uint32_t i, j, k;
 	convexHullVector root = convexHull->nodes[0];
 
 	j = 0;

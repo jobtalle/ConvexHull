@@ -4,9 +4,9 @@
 
 void convexHullCrop(
 	convexHull *convexHull,
-	const unsigned char *source,
-	const unsigned int width,
-	const unsigned int height,
+	const uint8_t *source,
+	const uint32_t width,
+	const uint32_t height,
 	const convexHullVector pivot);
 
 void convexHullGrahamScan(

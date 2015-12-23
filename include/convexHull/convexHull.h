@@ -13,22 +13,24 @@
 
 #pragma once
 
+#include <stdint.h>
+
 typedef struct {
 	float x, y;
 } convexHullVector;
 
 typedef struct convexHull{
-	unsigned int nodeCount;
+	uint32_t nodeCount;
 	convexHullVector *nodes;
 } convexHull;
 
 // Create a convex hull from a RGBA raster source
 convexHull convexHullCreate(
-	const unsigned char *source,
-	const unsigned int width,
-	const unsigned int height,
+	const uint8_t *source,
+	const uint32_t width,
+	const uint32_t height,
 	const convexHullVector pivot,
-	const unsigned int spacing,
+	const uint32_t spacing,
 	const float precision);
 
 // Free convex hull contents
